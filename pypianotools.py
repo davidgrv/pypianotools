@@ -5,6 +5,12 @@ note_mapping = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 
 
 
 def freq_to_note(freq):
+    """
+    Converts frequency in Hertz to the nearest note using scientific pitch notation.
+    Example: 441 Hz is nearest to A4 (440 Hz).
+    :param freq: frequency in Hertz as a float or int
+    :return: note string expressed in scientific pitch notation (e.g. A4)
+    """
     key_num = round(12 * (math.log2(freq / 440)) + 49)
     oct_num = (key_num - 1) // 12
     note_index = (key_num - 1) % 12
@@ -14,6 +20,13 @@ def freq_to_note(freq):
 
 
 def note_to_freq(note, decimal_places=3):
+    """
+    Converts a note expressed in scientific pitch notation (e.g. A4)
+    to its respective frequency in Hertz (440 Hz).
+    :param note: Note string expressed in scientific pitch notation (e.g. A4)
+    :param decimal_places: rounds returned float to passed number of decimal places
+    :return: frequency float in Hz
+    """
     a4_freq = 440.000
     key_mapping = {
         "C": -9, "C#": -8,
@@ -35,24 +48,40 @@ def note_to_freq(note, decimal_places=3):
 
 
 def note_to_midi(note):
+    """
+    Converts a note expressed in scientific pitch notation (e.g. A4)
+    to its respective MIDI note Number (69).
+    :param note: note string expressed in scientific pitch notation (e.g. A4)
+    :return: MIDI note number as an int
+    """
     if len(note) < 2 or not note[0].isalpha():
         raise ValueError("Invalid input: enter a valid note (e.g. A4)")
 
     note_name = note[:-1]
-    octave = int(note[-1])
+    oct = int(note[-1])
 
-    midi_note = note_mapping[note_name.upper()] + (octave + 1) * 12
+    midi_note = note_mapping[note_name.upper()] + (oct + 1) * 12
 
     return midi_note
 
 
 def note_to_key_number(note):
+    """
+    Takes a note expressed in scientific pitch notation and returns its key number
+    on the piano. Assumes the piano has 88 keys total starting from A0 up to C8.
+    :param note: note string expressed in scientific pitch notation (e.g. A4)
+    :return: piano key number as an int
+    """
     if len(note) < 2 or not note[0].isalpha():
         raise ValueError("Invalid input: enter a valid note (e.g. A4)")
 
     note_name = note[:-1]
-    octave = int(note[-1])
+    oct = int(note[-1])
 
-    piano_key_num = (note_mapping[note_name.upper()] + (octave + 1) * 12) - 20
+    piano_key_num = (note_mapping[note_name.upper()] + (oct + 1) * 12) - 20
+
+    if (piano_key_num < 0) or (piano_key_num > 88):
+        raise ValueError("Invalid input: note must be between A0 and C8 (inclusive) "
+                         "on an 88 key piano")
 
     return piano_key_num
